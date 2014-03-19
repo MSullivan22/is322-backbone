@@ -24,7 +24,17 @@ var app = app || {};
 			'keypress .edit': 'updateOnEnter',
 			'keydown .edit': 'revertOnEscape',
 			'blur .edit': 'close',
-			'tap #title': 'alert'
+			'tap label': 'alert',
+			'swipeleft label': 'alert2'
+		},
+		
+		alert: function () {
+			alert("Tap");
+			this.model.toggle();
+		},
+		
+		alert2: function () {
+			alert("Swipe");
 		},
 
 		// The TodoView listens for changes to its model, re-rendering. Since
@@ -88,10 +98,6 @@ var app = app || {};
 				alert("Please enter a date for your to-do item!");
 			}
 		},
-		
-		alert: function () {
-			alert("Swipe");
-		},
 
 		// Close the `"editing"` mode, saving changes to the todo.
 		close: function () {
@@ -110,7 +116,10 @@ var app = app || {};
 
 			if (trimmedValue) {
 				this.model.save({ title: trimmedValue });
-				this.model.save({ date: $('#curDate').val() });
+				
+				if ($('#curDate').val() !== "") {
+					this.model.save({ date: $('#curDate').val() });
+				}
 
 				if (value !== trimmedValue) {
 					// Model values changes consisting of whitespaces only are
