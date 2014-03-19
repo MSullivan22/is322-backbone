@@ -81,8 +81,11 @@ var app = app || {};
 		},
 		
 		editDate: function () {
-			alert("editDate");
-			this.$el.addClass('editing');
+			if ($('#curDate').val()  !== "") {
+				this.model.save({ date: $('#curDate').val() });
+			} else {
+				alert("Please enter a date for your to-do item!");
+			}
 		},
 
 		// Close the `"editing"` mode, saving changes to the todo.

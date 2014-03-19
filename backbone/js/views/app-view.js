@@ -108,10 +108,14 @@ var app = app || {};
 		// If you hit return in the main input field, create new **Todo** model,
 		// persisting it to *localStorage*.
 		createOnEnter: function (e) {
-			if (e.which === ENTER_KEY && this.$input.val().trim() && this.$date.val() !== undefined) {
-				app.todos.create(this.newAttributes());
-				this.$input.val('');
-			}
+			if (e.which === ENTER_KEY && this.$input.val().trim()) {
+				if (this.$date.val()  !== "") {
+					app.todos.create(this.newAttributes());
+					this.$input.val('');
+				} else {
+					alert("Please enter a date for your to-do item!");
+				}
+			} 
 		},
 
 		// Clear all completed todo items, destroying their models.
