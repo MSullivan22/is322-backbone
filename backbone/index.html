@@ -7,10 +7,18 @@
 		<style>
 			.inline {
 				float: left;
+				white-space: pre;
+				word-break: break-word;
+				padding: 15px 60px 15px 15px;
+				margin-left: 45px;
+				display: block;
+				line-height: 1.2;
+				-webkit-transition: color 0.4s;
+				transition: color 0.4s;
 			}
 			
 			.date {
-				padding-right: 20%;
+				padding-left: 50%;
 			}
 		</style>
 	</head>
@@ -37,7 +45,7 @@
 			<div class="view">
 				<input class="toggle" type="checkbox" <%= completed ? 'checked' : '' %>>
 				<label class="inline" id="title"><%- title %></label>
-				<label id="date"><%- date %></label>
+				<label id="date" class="date"><%- date %></label>
 				<button class="destroy"></button>
 			</div>
 			<input class="edit" value="<%- title %>">
@@ -45,6 +53,7 @@
 		</script>
 		<script type="text/template" id="stats-template">
 			<span id="todo-count"><strong><%= remaining %></strong> <%= remaining === 1 ? 'item' : 'items' %> left</span>
+			
 			<ul id="filters">
 				<li>
 					<a class="selected" href="#/">All</a>
@@ -56,6 +65,7 @@
 					<a href="#/completed">Completed</a>
 				</li>
 			</ul>
+			<button id="sort-date">Sort by date</button>
 			<% if (completed) { %>
 			<button id="clear-completed">Clear completed (<%= completed %>)</button>
 			<% } %>
@@ -65,6 +75,7 @@
 		<script src="bower_components/underscore/underscore.js"></script>
 		<script src="bower_components/backbone/backbone.js"></script>
 		<script src="bower_components/backbone.localStorage/backbone.localStorage.js"></script>
+		 
 		<script src="js/models/todo.js"></script>
 		<script src="js/collections/todos.js"></script>
 		<script src="js/views/todo-view.js"></script>
@@ -75,9 +86,12 @@
 		<script src="js/jquery.hammer.js"></script>
 		<script>  
 			$(document).ready(function() {  
-				$('label').hammer().on('swipeleft', function(){
+				document.getElementById('curDate').valueAsDate = new Date();
+				$('label').hammer().on('tap', function(){
+					alert("Swipe");
 				})
 			});  
-		</script>  
+		</script> 
+		
 	</body>
 </html>

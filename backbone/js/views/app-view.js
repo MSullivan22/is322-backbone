@@ -21,7 +21,8 @@ var app = app || {};
 		events: {
 			'keypress #new-todo': 'createOnEnter',
 			'click #clear-completed': 'clearCompleted',
-			'click #toggle-all': 'toggleAllComplete'
+			'click #toggle-all': 'toggleAllComplete',
+			'click #sort-date': 'sort'
 		},
 
 		// At initialization we bind to the relevant events on the `Todos`
@@ -34,6 +35,7 @@ var app = app || {};
 			this.$main = this.$('#main');
 			this.$list = $('#todo-list');
 			this.$date = this.$('#curDate');
+			this.ascending = true;
 
 			this.listenTo(app.todos, 'add', this.addOne);
 			this.listenTo(app.todos, 'reset', this.addAll);
@@ -80,6 +82,35 @@ var app = app || {};
 			var view = new app.TodoView({ model: todo });
 			this.$list.append(view.render().el);
 		},
+		
+		// Sort todos by date
+		sort: function () {
+			var numlist = [];
+			var order = [];
+			
+			app.todos.each(function(todo,index) {
+				numlist[index] = parseInt(todo.get('day'));
+			});
+			
+			if (this.ascending) {
+				numlist.sort(function(a,b){return a-b});
+				this.ascending = false;
+			} else {
+				numlist.sort(function(a,b){return b-a});
+				this.ascending = true;
+			}
+			
+			for (var i=0; i<numlist.length; i++) {
+				app.todos.each(function(todo, index) {
+					if (parseInt(todo.get('day')) == numlist[i]) {
+						order[i] = index;
+						todo.save ({ order: i });
+					}
+				});
+			}
+			
+			app.todos.fetch({reset: true});
+		},
 
 		// Add all items in the **Todos** collection at once.
 		addAll: function () {
@@ -101,9 +132,20 @@ var app = app || {};
 				title: this.$input.val().trim(),
 				order: app.todos.nextOrder(),
 				completed: false,
-				date: this.$date.val()
+				date: this.format(this.$date.val())
 			};
 		},
+		
+		format: function(date) {
+			return date.substr(5, 2)+'/'+date.substr(8, 2)+'/'+date.substr(0, 4);
+		},
+		
+		/*saveDate: function (date, todo) {
+			this.model.save({ year: date.substr(0, 4) });
+			this.model.save({ month: date.substr(5, 2) });
+			this.model.save({ day: date.substr(8, 2) });
+			this.model.save({ date: this.model.get('month')+'/'+this.model.get('day')+'/'+this.model.get('year') });
+		},*/
 
 		// If you hit return in the main input field, create new **Todo** model,
 		// persisting it to *localStorage*.
@@ -111,6 +153,7 @@ var app = app || {};
 			if (e.which === ENTER_KEY && this.$input.val().trim()) {
 				if (this.$date.val()  !== "") {
 					app.todos.create(this.newAttributes());
+					//this.saveDate(this.$date.val());
 					this.$input.val('');
 				} else {
 					alert("Please enter a date for your to-do item!");

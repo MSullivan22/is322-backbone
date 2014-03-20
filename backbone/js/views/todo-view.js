@@ -24,17 +24,22 @@ var app = app || {};
 			'keypress .edit': 'updateOnEnter',
 			'keydown .edit': 'revertOnEscape',
 			'blur .edit': 'close',
-			'tap label': 'alert',
-			'swipeleft label': 'alert2'
+			'swipeleft label': 'incomplete',
+			'swiperight label': 'complete',
+			'doubletap #title': 'edit',
+			'doubletap #date': 'editDate'
 		},
 		
-		alert: function () {
-			alert("Tap");
-			this.model.toggle();
+		complete: function() {
+			this.model.save({
+				completed: true
+			});
 		},
 		
-		alert2: function () {
-			alert("Swipe");
+		incomplete: function() {
+			this.model.save({
+				completed: false
+			});
 		},
 
 		// The TodoView listens for changes to its model, re-rendering. Since
@@ -59,11 +64,16 @@ var app = app || {};
 			if (this.model.changed.id !== undefined) {
 				return;
 			}
+			
+			if (this.model.get('day') == '') {
+				this.model.saveDate($('#curDate').val());
+			}
 
 			this.$el.html(this.template(this.model.toJSON()));
 			this.$el.toggleClass('completed', this.model.get('completed'));
 			this.toggleVisible();
-			this.model.date = $('#curDate').val();
+			//this.model.date = $('#curDate').val();
+			//this.saveDate($('#curDate').val());
 			this.$input = this.$('.edit');
 			return this;
 		},
@@ -93,7 +103,8 @@ var app = app || {};
 		
 		editDate: function () {
 			if ($('#curDate').val()  !== "") {
-				this.model.save({ date: $('#curDate').val() });
+				//this.model.save({ date: $('#curDate').val() });
+				this.saveDate($('#curDate').val());
 			} else {
 				alert("Please enter a date for your to-do item!");
 			}
@@ -118,7 +129,8 @@ var app = app || {};
 				this.model.save({ title: trimmedValue });
 				
 				if ($('#curDate').val() !== "") {
-					this.model.save({ date: $('#curDate').val() });
+					//this.model.save({ date: $('#curDate').val() });
+					this.saveDate($('#curDate').val());
 				}
 
 				if (value !== trimmedValue) {
@@ -154,6 +166,13 @@ var app = app || {};
 		// Remove the item, destroy the model from *localStorage* and delete its view.
 		clear: function () {
 			this.model.destroy();
+		},
+		
+		saveDate: function (date) {
+			this.model.save({ year: date.substr(0, 4) });
+			this.model.save({ month: date.substr(5, 2) });
+			this.model.save({ day: date.substr(8, 2) });
+			this.model.save({ date: this.model.get('month')+'/'+this.model.get('day')+'/'+this.model.get('year') });
 		}
 	});
 })(jQuery);

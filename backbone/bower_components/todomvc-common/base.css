@@ -239,7 +239,18 @@ label[for='toggle-all'] {
 	position: relative;
 }
 
-#todo-list li label {
+.date{
+	white-space: pre;
+	word-break: break-word;
+	padding: 15px 60px 15px 40%;
+	margin-left: 45px;
+	display: block;
+	line-height: 1.2;
+	-webkit-transition: color 0.4s;
+	transition: color 0.4s;
+}
+
+#todo-list li label .inline{
 	white-space: pre;
 	word-break: break-word;
 	padding: 15px 60px 15px 15px;
@@ -249,6 +260,8 @@ label[for='toggle-all'] {
 	-webkit-transition: color 0.4s;
 	transition: color 0.4s;
 }
+
+
 
 #todo-list li.completed label {
 	color: #a9a9a9;
@@ -356,6 +369,19 @@ label[for='toggle-all'] {
 #clear-completed {
 	float: right;
 	position: relative;
+	line-height: 20px;
+	text-decoration: none;
+	background: rgba(0, 0, 0, 0.1);
+	font-size: 11px;
+	padding: 0 10px;
+	border-radius: 3px;
+	box-shadow: 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+#sort-date {
+	float: left;
+	position: relative;
+	margin-left: 20px;
 	line-height: 20px;
 	text-decoration: none;
 	background: rgba(0, 0, 0, 0.1);
