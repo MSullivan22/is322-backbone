@@ -1,6 +1,21 @@
 /*global Backbone, jQuery, _, ENTER_KEY, ESC_KEY */
 var app = app || {};
 
+ Backbone.Model.prototype.toJSON = function() {
+	return this._parseDates(this.attributes);
+ };
+        
+Backbone.Model.prototype._parseDates = function(attrs) {
+	attrs = _.clone(attrs);	
+	if (!attrs.parsed) {
+		var newdate = attrs.dueDate.split("/").reverse().join("/");
+		attrs.dueDate = new Date(newdate).toISOString();
+		attrs.parsed = true;
+		attrs.date = newdate;
+	}
+    return attrs;
+};
+
 (function ($) {
 	'use strict';
 
@@ -66,7 +81,8 @@ var app = app || {};
 			}
 			
 			if (this.model.get('day') == '') {
-				this.model.saveDate($('#curDate').val());
+				//this.model.saveDate($('#curDate').val());
+				this.model.save({ dueDate: $('#curDate').val() });
 			}
 
 			this.$el.html(this.template(this.model.toJSON()));
@@ -104,7 +120,10 @@ var app = app || {};
 		editDate: function () {
 			if ($('#curDate').val()  !== "") {
 				//this.model.save({ date: $('#curDate').val() });
-				this.saveDate($('#curDate').val());
+				//this.saveDate($('#curDate').val());
+				this.model.save({ dueDate: $('#curDate').val() });
+				this.model.save({ parsed: false });
+				this.model.trigger('change');
 			} else {
 				alert("Please enter a date for your to-do item!");
 			}
@@ -128,10 +147,12 @@ var app = app || {};
 			if (trimmedValue) {
 				this.model.save({ title: trimmedValue });
 				
-				if ($('#curDate').val() !== "") {
+				/*if ($('#curDate').val() !== "") {
 					//this.model.save({ date: $('#curDate').val() });
-					this.saveDate($('#curDate').val());
-				}
+					//this.saveDate($('#curDate').val());
+					this.model.save({ dueDate: $('#curDate').val() });
+					this.model.save({ parsed: false });
+				}*/
 
 				if (value !== trimmedValue) {
 					// Model values changes consisting of whitespaces only are
@@ -166,13 +187,13 @@ var app = app || {};
 		// Remove the item, destroy the model from *localStorage* and delete its view.
 		clear: function () {
 			this.model.destroy();
-		},
+		}
 		
-		saveDate: function (date) {
+		/*saveDate: function (date) {
 			this.model.save({ year: date.substr(0, 4) });
 			this.model.save({ month: date.substr(5, 2) });
 			this.model.save({ day: date.substr(8, 2) });
 			this.model.save({ date: this.model.get('month')+'/'+this.model.get('day')+'/'+this.model.get('year') });
-		}
+		}*/
 	});
 })(jQuery);

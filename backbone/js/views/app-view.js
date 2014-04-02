@@ -85,31 +85,23 @@ var app = app || {};
 		
 		// Sort todos by date
 		sort: function () {
-			var numlist = [];
-			var order = [];
-			
-			app.todos.each(function(todo,index) {
-				numlist[index] = parseInt(todo.get('day'));
-			});
-			
+		
 			if (this.ascending) {
-				numlist.sort(function(a,b){return a-b});
+				app.todos.comparator = function (todo) {
+					return todo.get('dueDate');
+				};
+				
+				app.todos.sort();
+				app.todos.fetch({reset: true});
+				
 				this.ascending = false;
 			} else {
-				numlist.sort(function(a,b){return b-a});
+				app.todos.sort({silent:true})
+				app.todos.models = app.todos.models.reverse();
+				app.todos.trigger('reset', app.todos, {});
+				
 				this.ascending = true;
 			}
-			
-			for (var i=0; i<numlist.length; i++) {
-				app.todos.each(function(todo, index) {
-					if (parseInt(todo.get('day')) == numlist[i]) {
-						order[i] = index;
-						todo.save ({ order: i });
-					}
-				});
-			}
-			
-			app.todos.fetch({reset: true});
 		},
 
 		// Add all items in the **Todos** collection at once.
@@ -132,13 +124,15 @@ var app = app || {};
 				title: this.$input.val().trim(),
 				order: app.todos.nextOrder(),
 				completed: false,
-				date: this.format(this.$date.val())
+				//date: this.format(this.$date.val())
+				dueDate: this.$date.val()
+				//date: this.$date.val()
 			};
 		},
 		
-		format: function(date) {
+		/*format: function(date) {
 			return date.substr(5, 2)+'/'+date.substr(8, 2)+'/'+date.substr(0, 4);
-		},
+		},*/
 		
 		/*saveDate: function (date, todo) {
 			this.model.save({ year: date.substr(0, 4) });
